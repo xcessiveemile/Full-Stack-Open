@@ -1,56 +1,79 @@
-import Course from './components/Course'
+import { useState } from 'react'
 
 const App = () => {
-  const courses = [
-    {
-      name: 'Half Stack application development',
-      id: 1,
-      parts: [
-        {
-          name: 'Fundamentals of React',
-          exercises: 10,
-          id: 1,
-        },
-        {
-          name: 'Using props to pass data',
-          exercises: 7,
-          id: 2,
-        },
-        {
-          name: 'State of a component',
-          exercises: 14,
-          id: 3,
-        },
-        {
-          name: 'Redux',
-          exercises: 11,
-          id: 4,
-        },
-      ],
-    },
-    {
-      name: 'Node.js',
-      id: 2,
-      parts: [
-        {
-          name: 'Routing',
-          exercises: 3,
-          id: 1,
-        },
-        {
-          name: 'Middlewares',
-          exercises: 7,
-          id: 2,
-        },
-      ],
-    },
-  ]
+  const [persons, setPersons] = useState([
+    { name: 'Arto Hellas', number: '040-123456' }
+  ])
+
+  const [newName, setNewName] = useState('')
+  const [newNumber, setNewNumber] = useState('')
+  const [filterQuery, setFilterQuery] = useState('')
+
+
+  const handleNameChange = (event) => {
+    setNewName(event.target.value)
+  }
+
+  const handleNumberChange = (event) => {
+    setNewNumber(event.target.value)
+  }
+
+  const handleFilterChange = (event) => {
+    setFilterQuery(event.target.value)
+  }
+
+  const addPerson = (event) => {
+    event.preventDefault()
+    const trimmedName = newName.trim()
+
+    const nameExists = persons.some(person => 
+      person.name.trim().toLowerCase() === trimmedName.toLowerCase()
+    )
+
+    if (nameExists) {
+      alert(`${trimmedName} is already added to phonebook`)
+      return 
+    }
+
+    const personObject = {
+      name: trimmedName,
+      number: newNumber.trim()
+    }
+
+    setPersons(persons.concat(personObject))
+    setNewName('')
+    setNewNumber('')
+  }
+
+  const personToShow = person.filter(person =>
+    person.name.toLowerCase().includes(filterQuery.toLowerCase())
+  )
 
   return (
     <div>
-      {courses.map((course) => (
-        <Course key={course.id} course={course} />
-      ))}
+      <h2>Phonebook</h2>
+      <div>
+        filter shown with <input value={filterQuery} onChange={handleFilterChange} />
+      </div>
+
+      <h3>add a new person</h3>
+      <form onSubmit={addPerson}>
+        <div>
+          name: <input value={newName} onChange={handleNameChange} />
+        </div>
+        <div>
+          number: <input value={newNumber} onChange={handleNumberChange} />
+        </div>
+        <div>
+          <button type="submit">add</button>
+        </div>
+      </form>
+      <h2>Numbers</h2>
+      <ul>
+        {personToShow.map(person =>
+          <li key={person.name}>{person.name} {person.number}</li>
+        )}
+      </ul>
     </div>
   )
 }
